@@ -22,8 +22,32 @@ var Engine = {
       return 0;
       }
     },
-    getSpawn: function(viewport){
-      return({x:15,y:viewport.height/2})
+    getSpawn: function(cell){
+
+        var x1 = {
+          max:cell.x+180,
+          min:cell.x+cell.w+5
+        }
+        var x2 = {
+          min:cell.x-150,
+          max:cell.x-5
+        }
+        var y1 = {
+          max:cell.y+180,
+          min:cell.y+cell.h+5
+        }
+        var y2 ={
+          min:cell.y-150,
+          max:cell.y -5
+        }
+        var yRange = [y2,y1];
+        var xRange = [x2,x1];
+        var x = xRange[Crafty.math.randomInt(0,1)]
+        x = Crafty.math.randomInt(x.min,x.max)
+        var y = yRange[Crafty.math.randomInt(0,1)]
+        y = Crafty.math.randomInt(y.min,y.max)
+        return{x:x,y:y}
+
 
     },
     moveTo: function(obj,speed){
@@ -35,41 +59,20 @@ var Engine = {
 
     },
     collide: function(obj, hitData){
-
-      if(hitData[0].obj.team !== obj.team&&obj.type !== 'fighter'){
-        if(!obj.shielded){
           obj.health-=hitData[0].obj.damage;
           obj.healthBar.subtract(hitData[0].obj.damage,obj.maxHealth);
-        }
+
         hitData[0].obj.destroy();
 
         if(obj.health<0||obj.health==0){
           this.death(obj);
         }
-      }
+
 
     },
     death: function(obj){
-      if(obj.team=='hero'){
-        gold+=obj.value;
-      }
-      if(obj.team === "hero"){
-        var tmpIndx = heroes.indexOf(obj);
-        if(tmpIndx>-1)
-          heroes.splice(tmpIndx,1)
-
-      }
-      else{
-        var tmpIndx = monsters.indexOf(obj)
-        if(tmpIndx>-1)
-          monsters.splice(monsters.indexOf(obj),1)
-
-      }
       obj.healthBar.destroy();
-      if(obj.shield)
-        obj.shield.destroy();
       obj.destroy();
-      enemyCount--;
     },
     collideShield: function(hitData,obj,mod){
       if(obj.team !== hitData[0].obj.team){
@@ -81,7 +84,7 @@ var Engine = {
 
         }
         else{
-        
+
           var damage = hitData[0].obj.damage;
         }
         if(!obj.shielded){
@@ -91,50 +94,7 @@ var Engine = {
         hitData[0].obj.destroy();
         if(obj.health<=0) this.death(obj)
       }
-    },
-    abilities:{
-      "shield": function(obj,cost){
-        if(obj.team!=='hero'){
-        if(!obj.shielded){
-          gold-=cost;
-          console.log('shielded')
-          obj.shielded = true;
-          var shield = Crafty.e('Circle').attr({x:obj.x,y:obj.y,w:obj.w+1,h:obj.w+1})
-          shield.obj = obj;
-          obj.shield = shield;
-          Crafty.e('Delay').delay(function(){
-            obj.shielded = false;
-            shield.destroy();
-
-          },1000)
-        }
-      }
-      },
-      'heal': function(obj,cost){
-        if(obj.team!=='hero'){
-        obj.health+=60;
-        gold-=cost;
-        if(obj.health>obj.maxHealth){
-          obj.health = obj.maxHealth
-        }
-        obj.healthBar.subtract(-60,obj.maxHealth);
-      }
-      },
-      'smite': function(obj,cost){
-        if(obj.team == 'hero'){
-        obj.health-=50;
-        gold-=cost;
-        obj.healthBar.subtract(50,obj.maxHealth)
-        if(obj.health<=0){
-          Engine.death(obj);
-        }
-      }
-
-      }
     }
-
-
-
   }
 
   Crafty.c("Circle", {
@@ -194,6 +154,7 @@ var Engine = {
       this.value = countTime;
       this.tick();
     },
+
     events:{
       "EnterFrame":function(){
         this.text(this.value)
