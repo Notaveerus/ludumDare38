@@ -7,7 +7,7 @@ Crafty.c("Player", {
     this.w = 30;
     this.h = 30;
     this.damage = 50;
-    this.health = 50;
+    this.health = 10000;
     this.fourway(200)
     this.image('virus.png');
     this.origin("center")
@@ -16,9 +16,7 @@ Crafty.c("Player", {
       Engine.collide(this,hitData)
       if(Object.keys(infected).length>0&&infected.constructor === Object){
         var randInt = Crafty.math.randomInt(0,Object.keys(infected).length-1)
-
         var cured = infected[Object.keys(infected)[randInt]];
-        console.log(cured)
         delete infected[cured.id];
         cells[cured.id] = cured;
         cured.image('cell.png')
@@ -28,18 +26,8 @@ Crafty.c("Player", {
       }
     })
     this.hitDelay = 10;
-  },
-  "player": function(){
-    if(this.init){
-      this.range = 400
-      this.maxHealth = Math.round(100*this.diffMod);
-      this.health = this.maxHealth;
 
-      this.init = false;
-      this.damage = 20*this.diffMod
-      this.speed =1;
-      this.value=10*this.diffMod
-    }
+
   },
   attack: function(){
       if(this.fireDelay <=0){
@@ -65,7 +53,7 @@ Crafty.c("Player", {
         Crafty.e("Delay").delay(function() {
           arrow.destroy();
         }, 2000);
-        this.fireDelay = 25
+        this.fireDelay = 15
       }
   },
   events: {
@@ -135,7 +123,7 @@ Crafty.c("AI",{
   },
   "ranged": function(){
     if(this.init){
-      this.range=400;
+      this.range=300;
       this.maxHealth = 100;
       this.damage = 50;
       this.health = this.maxHealth;
@@ -154,8 +142,8 @@ Crafty.c("AI",{
             w:5,
             h:30,
             rotation: this._rotation,
-            xspeed: 10 * Math.sin(this._rotation/57.3),
-            yspeed: 10 * Math.cos(this._rotation/57.3)
+            xspeed: 7 * Math.sin(this._rotation/57.3),
+            yspeed: 7 * Math.cos(this._rotation/57.3)
 
           })
         .color("#533108")
@@ -203,10 +191,9 @@ Crafty.c("Cell",{
       this.image('cellInfected.png')
       if(cells[this.id]){
         player.health+=50
-        console.log(cells)
         delete cells[this.id];
-        console.log(cells)
         infected[this.id]=this;
+        Engine.generateEnemies();
       }
 
     })

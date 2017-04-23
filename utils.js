@@ -74,27 +74,17 @@ var Engine = {
       obj.healthBar.destroy();
       obj.destroy();
     },
-    collideShield: function(hitData,obj,mod){
-      if(obj.team !== hitData[0].obj.team){
-        var rot = obj.rotation;
-        var eRot = hitData[0].obj.rotation;
-        var diff = Math.abs(eRot-rot)
-        if(Crafty.math.withinRange(diff,130,230)){
-          var damage = hitData[0].obj.damage*0.25*mod;
-
+    generateEnemies: function(){
+      var cellKeys = Object.keys(cells);
+      for(var i=0;i<cellKeys.length;i++){
+        var cell = cells[cellKeys[i]];
+        for(var j=0;j<2;j++){
+          var spawnLoc = Engine.getSpawn(cell)
+          Crafty.e("AI").attr({x:spawnLoc.x,y:spawnLoc.y})
         }
-        else{
-
-          var damage = hitData[0].obj.damage;
-        }
-        if(!obj.shielded){
-          obj.health -=damage;
-          obj.healthBar.subtract(damage,obj.maxHealth);
-        }
-        hitData[0].obj.destroy();
-        if(obj.health<=0) this.death(obj)
       }
     }
+
   }
 
   Crafty.c("Circle", {
@@ -120,44 +110,4 @@ var Engine = {
       }
     }
 
-  })
-
-  Crafty.c("Countdown",{
-    required: '2D,DOM,Text,Color',
-    init:function(){
-      this.x = Crafty.viewport.width/2-100
-      this.y = Crafty.viewport.height-35;
-      this.w = 200;
-      this.value = countTime;
-      this.text(this.value);
-      this.textColor('rgb(0, 0, 0)');
-      this.textFont({
-        size: '30px',
-        type: 'bold',
-        family: 'Arial'
-      })
-    },
-    tick: function(){
-      if(this.value>0){
-        var obj=this;
-        Crafty.e('Delay').delay(function(){
-          obj.value--;
-          obj.tick();
-        },1000)
-      }
-      else{
-        this.value = "Wave: "+wave;
-
-      }
-    },
-    reset: function(){
-      this.value = countTime;
-      this.tick();
-    },
-
-    events:{
-      "EnterFrame":function(){
-        this.text(this.value)
-      }
-    }
   })

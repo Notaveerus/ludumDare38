@@ -97,10 +97,10 @@ $(document).ready(function(){
 
     player = Crafty.e("Player");
     player.x = 1500
-    player.y = 1500    
+    player.y = 1500
 
   Crafty.viewport.clampToEntities = false;
-  Crafty.viewport.scale(0.5);
+  Crafty.viewport.scale(2);
   Crafty.one("CameraAnimationDone", function() {
       Crafty.viewport.follow(player, 0, 0);
   });
